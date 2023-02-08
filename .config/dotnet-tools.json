@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "coffeecup": {
+      "version": "1.0.1",
+      "commands": [
+        "coffeecup"
+      ]
+    },
+    "coffeecupcli": {
+      "version": "1.0.1",
+      "commands": [
+        "coffeecupcli"
+      ]
+    },
+    "coffeecup-windows": {
+      "version": "1.0.1",
+      "commands": [
+        "coffeecup-windows"
+      ]
+    },
+    "coffeecup-macos": {
+      "version": "1.0.1",
+      "commands": [
+        "coffeecup-macos"
+      ]
+    },
+    "coffeecup-linux": {
+      "version": "1.0.1",
+      "commands": [
+        "coffeecup-linux"
+      ]
+    }
+  }
+}
