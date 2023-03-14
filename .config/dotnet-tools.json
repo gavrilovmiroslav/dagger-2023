@@ -3,31 +3,31 @@
   "isRoot": true,
   "tools": {
     "coffeecup": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "commands": [
         "coffeecup"
       ]
     },
     "coffeecupcli": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "commands": [
         "coffeecupcli"
       ]
     },
     "coffeecup-windows": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "commands": [
         "coffeecup-windows"
       ]
     },
     "coffeecup-macos": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "commands": [
         "coffeecup-macos"
       ]
     },
     "coffeecup-linux": {
-      "version": "1.0.1",
+      "version": "1.0.3",
       "commands": [
         "coffeecup-linux"
       ]

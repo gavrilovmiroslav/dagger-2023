@@ -32,12 +32,14 @@ project "Dagger"
 		"include", 
 		"include/**", 
 		"tools/vcpkg/installed/x64-windows/include",
-		"tools/vcpkg/installed/x64-windows-static/include"
+		"tools/vcpkg/installed/x64-windows-static/include",
+		"tools/vcpkg/installed/arm64-osx/include"
 	}
 
 	libdirs {
 		"tools/vcpkg/installed/x64-windows/lib/",
-		"tools/vcpkg/installed/x64-windows-static/lib/"
+		"tools/vcpkg/installed/x64-windows-static/lib/",
+		"tools/vcpkg/installed/arm64-osx/lib/"
 	}
 
 	vpaths {
