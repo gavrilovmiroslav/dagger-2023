@@ -4,18 +4,15 @@
 
 struct Position
 {
-	geometry::Vec2 inner;
+	geometry::Vec2 xy;
+};
 
-	Position(int x, int y)
-		: inner{ x, y }
-	{}
+struct Scale
+{
+	geometry::Vec2 xy;
 };
 
 struct Visibility
 {
-	bool shown;
-
-	Visibility(bool state)
-		: shown{ state }
-	{}
+	bool state;
 };

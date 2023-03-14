@@ -27,7 +27,7 @@ namespace core
 	};
 
 	class WindowingModule 
-		: public ecs::Module
+		: public ecs::System
 		, public AllocateUnique<WindowingState>
 		, public MutAccessUnique<WindowingState>
 		, public SignalEmitter<WindowInitSignal>

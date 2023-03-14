@@ -1,28 +1,24 @@
 #pragma once
 
-#include "Config.h"
+#include "Access.h"
 #include "Definitions.h"
+#include "DiagnosticsUtil.h"
 
-class Diagnostics {
+using namespace containers;
+using namespace std::chrono;
+
+class DiagnosticsModule
+	: public ecs::System
+	, public SignalProcessor<DiagnosticsSignal>
+	, public SignalEmitter<DiagnosticsToolSignal>
+{
 
 public:
-	static Diagnostics& get_instance()
-	{
-		static Diagnostics instance;
-		return instance;
-	}
-
-	Diagnostics(Diagnostics const&) = delete;
-	void operator=(Diagnostics const&) = delete;
-
-	enum DiagType {
-		DIAG_TYPE_FPS = 0,
-		DIAG_TYPE_COUNT = 1
-	};
-
-	double get_diagnostics(DiagType diagType) const;
+	const DiagEntry& get_diagnostics(DiagType diagType);
+	void set_diagnostics(DiagType diagType, F32 value);
 
 private:
-	Diagnostics() = default;
+	StaticArray<DiagEntry, DIAG_TYPE_COUNT> diagnostics;
+	void process_signal(DiagnosticsSignal&) override;
 };
 

@@ -6,11 +6,31 @@
 
 struct Texture;
 
+enum Flip
+{
+	None = 0,
+	Horizontal = 1,
+	Vertical = 2
+};
+
 struct Sprite
 {
 	ecs::Entity texture;
 	geometry::Rect clip;
-	geometry::Vec2 scale;
+	geometry::Vec2 pivot{ 0.5f, 0.5f };
+};
+
+struct Image
+{
+	String sprite;
+	geometry::Vec2 scale{ 1, 1 };
+};
+
+struct Spritesheet
+{
+	containers::DynamicArray<ecs::Entity> sprites;
+
+	static ecs::Entity get_by_name(String name);
 };
 
 namespace core {
@@ -22,10 +42,13 @@ namespace core {
 }
 
 class SpriteRenderingModule
-	: public ecs::Module
+	: public ecs::System
 	, public AccessStorage<Texture>
+	, public AccessStorage<Flip>
+	, public AccessStorage<Position>
+	, public AccessStorage<Scale>
 	, public MutAccessStorage<Sprite>
-	, public AccessGroupStorage<Sprite, Position, Visibility>
+	, public AccessGroupStorage<Sprite, Visibility>
 	, public AccessUnique<core::WindowingState>
 	, public SignalProcessor<core::RenderSignal>
 	, public SignalProcessor<core::AssetUnloadingSignal<Texture>>

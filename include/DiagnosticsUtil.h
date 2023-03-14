@@ -4,6 +4,32 @@
 
 #include <implot.h>
 
+using namespace std::chrono;
+
+struct DiagEntry
+{
+	F32 value;
+	high_resolution_clock::time_point sample_time;
+};
+
+enum DiagType 
+{
+	DIAG_TYPE_FPS = 0,
+	DIAG_TYPE_COUNT = 1
+};
+
+struct DiagnosticsSignal
+{
+	DiagType diagType;
+	F32 value;
+};
+
+struct DiagnosticsToolSignal
+{
+	DiagType diagType;
+	DiagEntry diagEntry;
+};
+
 struct ScrollingBuffer {
 	int max_size;
 	int offset;

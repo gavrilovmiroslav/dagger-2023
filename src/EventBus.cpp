@@ -16,15 +16,23 @@ void EventBusModule::on_tick()
 	bus::Event e;
 	static BusEventSignal signal;
 
+	auto& key_state = MutAccessUnique<KeyState>::access_unique();
+
+	key_state.pressed_keys.clear();
+	key_state.released_keys.clear();
+
+	bool quit = false;
+
+	static int n = 0;
+
 	while (bus::PollEvent(&e) != 0)
 	{
 		signal.event = e;
-		SignalEmitter<BusEventSignal>::emit(signal);
 
 		switch (e.type)
 		{
 		case SDL_QUIT:
-			Engine::get_instance().quit();
+			quit = true;
 			break;
 
 		case SDL_WINDOWEVENT:
@@ -33,38 +41,63 @@ void EventBusModule::on_tick()
 			}
 			break;
 
+		case SDL_KEYDOWN:
+		{
+			auto code = (KeyCode)e.key.keysym.scancode;
+			if (!key_state.current_keys.contains(code))
+			{
+				key_state.pressed_keys.add(code);
+				key_state.current_keys.add(code);
+			}
+		}
+			break;
+
+		case SDL_KEYUP:
+		{
+			auto code = (KeyCode)e.key.keysym.scancode;
+			if (key_state.current_keys.contains(code))
+			{
+				key_state.released_keys.add((KeyCode)e.key.keysym.scancode);
+				key_state.current_keys.remove((KeyCode)e.key.keysym.scancode);
+			}
+		}
+			break;
+
 		default:
 			break;
 		}
+
+		SignalEmitter<BusEventSignal>::emit(signal);
+
+		if (quit)
+			Engine::get_instance().quit();
 	}
 
-	auto& state = MutAccessUnique<InputSnapshot>::access_unique();	
-	state.mouse_button_mask = SDL_GetMouseState(&state.mouse_position.x, &state.mouse_position.y);
+	auto& mouse_state = MutAccessUnique<MouseState>::access_unique();
+	mouse_state.mouse_button_mask = SDL_GetMouseState(&mouse_state.mouse_position.x, &mouse_state.mouse_position.y);
 
 	for (U8 i = 1; i < 4; i++)
 	{
 		U8 j = i - 1;
-		state.current_mouse_buttons[j] = state.mouse_button_mask & SDL_BUTTON(i);
+		mouse_state.current_mouse_buttons[j] = mouse_state.mouse_button_mask & SDL_BUTTON(i);
 
-		if (!state.previous_mouse_buttons[j] && !state.current_mouse_buttons[j])
+		if (!mouse_state.previous_mouse_buttons[j] && !mouse_state.current_mouse_buttons[j])
 		{
-			state.mouse_buttons[j] = MouseEventState::UpHold;
+			mouse_state.mouse_buttons[j] = MouseEventState::UpHold;
 		}
-		else if (!state.previous_mouse_buttons[j] && state.current_mouse_buttons[j])
+		else if (!mouse_state.previous_mouse_buttons[j] && mouse_state.current_mouse_buttons[j])
 		{
-			state.mouse_buttons[j] = MouseEventState::DownNow;
+			mouse_state.mouse_buttons[j] = MouseEventState::DownNow;
 		}
-		else if (state.previous_mouse_buttons[j] && state.current_mouse_buttons[j])
+		else if (mouse_state.previous_mouse_buttons[j] && mouse_state.current_mouse_buttons[j])
 		{
-			state.mouse_buttons[j] = MouseEventState::DownHold;
+			mouse_state.mouse_buttons[j] = MouseEventState::DownHold;
 		}
-		else if (state.previous_mouse_buttons[j] && !state.current_mouse_buttons[j])
+		else if (mouse_state.previous_mouse_buttons[j] && !mouse_state.current_mouse_buttons[j])
 		{
-			state.mouse_buttons[j] = MouseEventState::UpNow;
+			mouse_state.mouse_buttons[j] = MouseEventState::UpNow;
 		}
 
-		state.previous_mouse_buttons[j] = state.current_mouse_buttons[j];
+		mouse_state.previous_mouse_buttons[j] = mouse_state.current_mouse_buttons[j];
 	}
-
-	state.key_states = SDL_GetKeyboardState(nullptr);
 }

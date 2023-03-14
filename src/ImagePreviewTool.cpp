@@ -37,7 +37,7 @@ void ImagePreviewTool::show_tool_window()
 {
     if (filepath != "")
     {
-        auto texture = AccessModule<AssetModule>::access_module()->get_asset<Texture>(filepath);
+        auto texture = AccessSystem<AssetModule>::access_system()->get_asset<Texture>(filepath);
         if (texture == ecs::no_entity) return;
 
         auto& state = AccessUnique<WindowingState>::access_unique();

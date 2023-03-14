@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Assets.h"
+#include "Diagnostics.h"
 #include "Engine.h"
 #include "EventBus.h"
+#include "FPSCalculator.h"
 #include "Geometry.h"
 #include "Loaders.h"
 #include "Rendering.h"
@@ -10,6 +12,7 @@
 #include "Windowing.h"
 #include "Tooling.h"
 #include "Textures.h"
+#include "Animations.h"
 
 #include "DaggerEditorTool.h"
 #include "SpriteEditorTool.h"
@@ -28,13 +31,17 @@ struct Default2D
 		engine.use<WindowingModule>();
 		engine.use<RenderingModule>();
 		engine.use<EventBusModule>();
+		engine.use<DiagnosticsModule>();
+		engine.use<SMAFPSCalculatorModule>();
 
 		auto& assets = engine.use<AssetModule>();
 		assets->add_loader<TextureLoader>();
+		assets->add_loader<SpritesheetLoader>();
 
 		engine.use<ToolModule>();
 
 		engine.use<SpriteRenderingModule>();
+		engine.use<AnimationModule>();
 	}
 };
 

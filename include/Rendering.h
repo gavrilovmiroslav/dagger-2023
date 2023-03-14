@@ -16,7 +16,7 @@ namespace core
 	struct WindowingState;
 
 	class RenderingModule 
-		: public ecs::Module
+		: public ecs::System
 		, public AccessUnique<WindowingState>
 		, public SignalProcessor<core::WindowResizedSignal>
 		, public SignalEmitter<RenderFrameStart>

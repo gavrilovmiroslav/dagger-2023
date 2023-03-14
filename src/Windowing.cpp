@@ -18,18 +18,18 @@ bool WindowingModule::on_start()
 		return false;
 	}
 
+	int width = std::atoi(get_config["window"]["width"].c_str());
+	int height = std::atoi(get_config["window"]["height"].c_str());
 	state.window = SDL_CreateWindow(
 		get_config["window"]["title"].c_str(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		800, 600, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+		width, height, SDL_WINDOW_SHOWN);
 
 	if (state.window == nullptr)
 	{
 		Logger::error("SDL window couldn't be created: {}.", SDL_GetError());
 		return false;
 	}
-
-	SDL_SetWindowFullscreen(state.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 	state.renderer = SDL_CreateRenderer(state.window, -1, SDL_RENDERER_ACCELERATED);	
 	SignalEmitter<WindowInitSignal>::emit(WindowInitSignal{});

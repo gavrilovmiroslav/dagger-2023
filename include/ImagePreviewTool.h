@@ -18,13 +18,13 @@ namespace core
 struct ImagePreviewTool
 	: public core::Tool 
 	, public AccessUnique<core::WindowingState>
-	, public AccessModule<core::RenderingModule>
-	, public AccessModule<core::AssetModule>	
+	, public AccessSystem<core::RenderingModule>
+	, public AccessSystem<core::AssetModule>	
 	, public AccessStorage<Texture>
 	, public SignalProcessor<core::EditorAssetSelectedIntent>
 {
 	ImagePreviewTool();
-	
+
 	void process_signal(core::EditorAssetSelectedIntent&) override;
 
 	String get_menu_tool_name() override;

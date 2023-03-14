@@ -4,7 +4,7 @@
 #include "Tooling.h"
 
 class DaggerEditorTool
-	: public ecs::Module
+	: public ecs::System
 	, public SignalProcessor<core::ToolRenderSignal>
 	, public SignalEmitter<core::EditorToolAssetLoadingSignal>
 	, public SignalEmitter<core::EditorToolMenuBarSignal>

@@ -10,10 +10,13 @@
 
 using namespace std::chrono;
 
+struct Time;
+
 namespace core
 {
 	struct GameStartSignal {};
 	struct GameEndSignal {};
+	struct FrameDurationSignal { F32 frame_duration; };
 
 	enum EngineDefaults
 	{
@@ -45,6 +48,8 @@ namespace core
 		Config configuration;
 		containers::DynamicArray<memory::SharedPtr<ecs::LifecycleTrait>> lifetimes;
 
+		F32 time_delta = 1.0f / 60.0f;
+
 		template<typename T>
 		memory::SharedPtr<T>& access_type_indexed_resource()
 		{
@@ -60,10 +65,9 @@ namespace core
 			return instance;
 		}
 
-		time_point<high_resolution_clock> prev_time, current_time;
-		U32 frame_count = 0, fps;
-
 	public:
+		friend struct ::Time;
+
 		inline void quit()
 		{
 			should_quit = true;
@@ -114,23 +118,23 @@ namespace core
 				Logger::critical("Lifecycle {} not registered, but accessed through `Engine::get`.", typeid(S).name());
 			}
 			return ptr;
-		}
-		
+		}		
+
 		inline void frame()
-		{
+		{			
+			static high_resolution_clock::time_point start_time;
+			static high_resolution_clock::time_point end_time;
+			static duration<F32> frame_duration;
+
+			start_time = high_resolution_clock::now();
 			for (auto& lifetime : lifetimes)
 			{
 				lifetime->on_tick();
 			}
-
-			frame_count++;
-			current_time = high_resolution_clock::now();
-
-			if (current_time - prev_time >= seconds{ 1 }) {
-				fps = frame_count;
-				frame_count = 0;
-				prev_time = current_time;
-			}
+			end_time = high_resolution_clock::now();
+			frame_duration = end_time - start_time;
+			time_delta = frame_duration.count();
+			dispatcher.trigger(FrameDurationSignal{ time_delta });
 		}
 
 		void run()
@@ -140,7 +144,7 @@ namespace core
 				lifetime->on_start();
 			}
 
-			dispatcher.trigger(GameStartSignal{});			
+			dispatcher.trigger(GameStartSignal{});
 
 			while (!should_quit)
 			{
@@ -155,7 +159,14 @@ namespace core
 				lifetime->on_end();
 			}
 		}
-
-		U32 get_fps() const { return fps; }
 	};
 }
+
+
+struct Time
+{
+	inline static const F32 delta_time()
+	{
+		return core::Engine::get_instance().time_delta;
+	}
+};

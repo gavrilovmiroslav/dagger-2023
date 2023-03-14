@@ -21,7 +21,7 @@ namespace core
 	};
 
 	struct AbstractAssetLoader
-		: SignalProcessor<AssetLoadStartSignal>		
+		: public SignalProcessor<AssetLoadStartSignal>		
 	{		
 		friend class AssetModule;
 
@@ -58,7 +58,13 @@ namespace core
 			auto yaml = YAML::LoadFile("data/entry.yaml");
 			auto name = get_default_asset_name();
 
-			if (!yaml[name].IsDefined())
+			containers::Set<String> keys{};
+			for (auto& key : yaml)
+			{
+				keys.insert(key.first.as<String>());
+			}
+
+			if (keys.find(name) == keys.end())
 			{
 				return name + ".yaml";
 			}
@@ -79,7 +85,7 @@ namespace core
 	};
 
 	class AssetModule
-		: public ecs::Module
+		: public ecs::System
 		, public MutAccessUnique<WindowingState>
 		, public SignalEmitter<AssetLoadStartSignal>
 		, public SignalEmitter<AssetLoadEndSignal>

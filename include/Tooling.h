@@ -14,7 +14,6 @@ namespace core
 	struct WindowingState;
 	struct WindowInitSignal;
 	struct WindowShutdownSignal;
-	struct InputSnapshot;
 	struct RenderFrameEnd;
 	struct BusEventSignal;
 
@@ -29,8 +28,7 @@ namespace core
 	struct EditorToolMenuBarSignal {};
 
 	class ToolModule
-		: public ecs::Module
-		, public AccessUnique<InputSnapshot>
+		: public ecs::System
 		, public AccessUnique<WindowingState>
 		, public SignalProcessor<PostRenderSignal>
 		, public SignalProcessor<WindowInitSignal>
@@ -54,7 +52,7 @@ namespace core
 	};
 
 	struct Tool
-		: public ecs::Module
+		: public ecs::System
 		, public SignalProcessor<core::ToolRenderSignal>
 		, public SignalProcessor<core::EditorToolMenuBarSignal>
 	{
@@ -70,7 +68,7 @@ namespace core
 		Bool is_visible;
 
 		Tool()
-			: is_visible{ true }
+			: is_visible{ false }
 		{}
 
 		Bool is_tool() override { return true; }

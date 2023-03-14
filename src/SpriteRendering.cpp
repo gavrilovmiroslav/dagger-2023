@@ -7,38 +7,44 @@
 
 using namespace core;
 
+ecs::Entity Spritesheet::get_by_name(String name)
+{
+	return AccessSystem<AssetModule>{}.access_system()->get_asset<Spritesheet>(name);
+}
+
 void SpriteRenderingModule::process_signal(RenderSignal& signal)
 {
-	const auto& state = AccessUnique<WindowingState>::access_unique();
+	const auto& position_storage = AccessStorage<Position>::access_storage();
+	const auto& scale_storage = AccessStorage<Scale>::access_storage();
+	const auto& flip_storage = AccessStorage<Flip>::access_storage();
 
-	const auto& group = AccessGroupStorage<Sprite, Position, Visibility>::access_storage();
+	const auto& state = AccessUnique<WindowingState>::access_unique();
 	const auto& textures = AccessStorage<Texture>::access_storage();
 	
-	for (const auto entity : group)
-	{		
-		const auto& sprite = group.get<Sprite>(entity);
+	for (const auto&& [ entity, sprite, show ] : AccessGroupStorage<Sprite, Visibility>::access_storage().each())
+	{
+		if (sprite.texture == (ecs::Entity)0 || sprite.texture == ecs::no_entity) continue;
+		
+		const auto& pos = position_storage.contains(entity) ? position_storage.get<Position>(entity) : Position{ geometry::Vec2{ 0, 0 } };
+		const auto& scale = scale_storage.contains(entity) ? scale_storage.get<Scale>(entity) : Scale{ geometry::Vec2{ 1, 1 } };
+		const auto& flip = flip_storage.contains(entity) ? flip_storage.get<Flip>(entity) : Flip::None;
 
-		if (sprite.texture == ecs::no_entity) continue;
-
-		const auto& pos = group.get<Position>(entity);
-		const auto& show = group.get<Visibility>(entity);
-
-		if (show.shown)
+		if (show.state)
 		{
-			geometry::Rect dest{ (int)pos.inner.x, (int)pos.inner.y, (int)sprite.scale.x, (int)sprite.scale.y };
 			const auto& texture = textures.get<Texture>(sprite.texture);
-			SDL_RenderCopy(state.renderer, texture.inner, &sprite.clip, &dest);
+			geometry::Rect dest{ (int)(pos.xy.x - sprite.pivot.x * sprite.clip.w), (int)(pos.xy.y - sprite.pivot.y * sprite.clip.h), (int)(sprite.clip.w * scale.xy.x), (int)(sprite.clip.h * scale.xy.y)};
+			SDL_RenderCopyEx(state.renderer, texture.inner, &sprite.clip, &dest, 0.0f, nullptr, (SDL_RendererFlip)flip);
 		}
 	}
 }
 
 void SpriteRenderingModule::process_signal(AssetUnloadingSignal<Texture>& signal)
 {
-	const auto& sprites = MutAccessStorage<Sprite>::access_storage();
+	const auto& current_sprites = MutAccessStorage<Sprite>::access_storage();
 
-	for (const auto entity : sprites)
+	for (const auto entity : current_sprites)
 	{
-		auto& sprite = sprites.get<Sprite>(entity);
+		auto& sprite = current_sprites.get<Sprite>(entity);
 		if (sprite.texture == signal.id)
 			sprite.texture = ecs::no_entity;
 	}

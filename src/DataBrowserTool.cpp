@@ -26,6 +26,7 @@ inline void show_data_browser_tooltip(String text)
 
 void DataBrowserTool::draw_tree(fs::Dir path)
 {
+	// TODO (reported by @mstojanovic): Sus path handling, fix this plez
 	auto& name = fs::get_simple_name(path);
 	auto fullname = path.path().parent_path().string() + "/" + name;	
 	fullname.erase(0, 5);
@@ -54,7 +55,7 @@ void DataBrowserTool::draw_tree(fs::Dir path)
 	{
 		if (path.path().extension() == ".png")
 		{
-			if (AccessModule<core::AssetModule>::access_module()->contains<Texture>(fullname))
+			if (AccessSystem<core::AssetModule>::access_system()->contains<Texture>(fullname))
 			{
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			}
@@ -63,15 +64,6 @@ void DataBrowserTool::draw_tree(fs::Dir path)
 				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
 			}
 		}
-
-		//if (selected_item == item_name)
-		//{
-		//	ImGui::PushStyleColor(ImGuiCol_TextSelectedBg, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
-		//}
-		//else
-		//{
-		//	ImGui::PushStyleColor(ImGuiCol_TextSelectedBg, ImVec4(0, 0, 0, 1.0f));
-		//}
 
 		if (ImGui::MenuItem(name.c_str())) 
 		{
@@ -82,7 +74,7 @@ void DataBrowserTool::draw_tree(fs::Dir path)
 			SignalEmitter<core::EditorAssetSelectedIntent>::emit(core::EditorAssetSelectedIntent{ item_name.c_str() });
 		}
 		ImGui::PopStyleColor();
-//		ImGui::PopStyleColor();
+
 		show_data_browser_tooltip(fullname);
 	}
 }

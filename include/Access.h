@@ -23,15 +23,6 @@ struct AccessTrait
 };
 
 template<typename T>
-struct AccessModule : public AccessTrait
-{
-	memory::SharedPtr<T>& access_module() const
-	{
-		return core::Engine::get_instance().get<T>();
-	}
-};
-
-template<typename T>
 struct AccessSystem : public AccessTrait
 {
 	memory::SharedPtr<T>& access_system() const
@@ -77,6 +68,24 @@ struct AccessUnique : public AccessTrait
 
 		auto key = get_unique_resource_id<T>();
 		return registry.get<T>(unique_resources[key]);
+	}
+};
+
+template<typename T>
+struct AccessComponentById : public AccessTrait
+{
+	const T& get(ecs::Entity e) const 
+	{
+		return core::Engine::get_instance().registry.get<const T>(e);
+	}
+};
+
+template<typename T>
+struct MutAccessComponentById : public AccessTrait
+{
+	T& get(ecs::Entity e) const
+	{
+		return core::Engine::get_instance().registry.get<T>(e);
 	}
 };
 
@@ -202,8 +211,6 @@ namespace ecs
 		: public LifecycleTrait
 		, public EntitySpawner
 		, public EntityModifier {};
-
-	struct Module : public LifecycleTrait {};
 }
 
 struct Game

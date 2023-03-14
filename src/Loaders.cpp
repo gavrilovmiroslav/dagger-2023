@@ -18,7 +18,9 @@
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
 
+
 // Texture loader
+
 
 TextureLoader::TextureLoader()
 	: core::AssetLoader<Texture>()
@@ -32,7 +34,7 @@ memory::RawPtr<Texture> TextureLoader::load_texture(String path)
 
 	U32 error;
 	U32 width, height;
-	U32 channelsInFile = 3;
+	U32 channelsInFile = 4;
 	std::vector<U8> data;
 
 	auto filepath = path.c_str();
@@ -210,5 +212,121 @@ Bool TextureLoader::contains(String name) const
 {
 	return loaded_entity_mapping.find(name) != loaded_entity_mapping.end();
 }
+
+
+// Sprite loader
+
+
+String SpritesheetLoader::get_default_asset_name() const 
+{
+	return "spritesheets";
+}
+
+void SpritesheetLoader::load_assets() 
+{
+	auto& registry = core::Engine::get_instance().registry;
+	auto asset_path = get_loader_path();
+	auto yaml = YAML::LoadFile("data/" + asset_path);
+
+	containers::DynamicArray<String> entries;
+	containers::DynamicArray<String> to_remove;
+
+	for (auto entry : yaml)
+	{
+		entries.push_back(entry.as<String>());
+	}
+
+	for (auto loaded : loaded_entity_mapping)
+	{
+		if (std::find(entries.begin(), entries.end(), loaded.first) == entries.end())
+		{
+			emit(core::AssetUnloadingSignal<Spritesheet>{ loaded.second });
+			registry.remove<Spritesheet>(loaded.second);
+		}
+
+		to_remove.push_back(loaded.first);
+	}
+
+	for (auto del : to_remove)
+	{
+		loaded_entity_mapping.erase(del);
+	}
+
+	for (auto entry : yaml)
+	{
+		fs::Dir sprite_full_path{ entry.as<String>() };
+		auto sprite_name = entry.as<String>().substr(0, sprite_full_path.path().string().length() - 21);
+		auto sprite_path = "data/" + entry.as<String>();
+
+		auto sheet = load_asset(sprite_name, sprite_path);
+		loaded_entity_mapping.insert({ sprite_name, sheet });
+	}
+}
+
+ecs::Entity SpritesheetLoader::load_asset(String spritesheet_name, String spritesheet_path)
+{
+	fs::Dir path{ spritesheet_path };
+	if (!path.exists())
+	{
+		return ecs::no_entity;
+	}
+
+	auto loaded = YAML::LoadFile(spritesheet_path);
+	geometry::Vec2 cell_count;
+
+	auto texture = AccessSystem<core::AssetModule>::access_system()->
+		get_asset<Texture>(loaded["texture"].as<String>());
+
+	assert(texture != ecs::no_entity);
+
+	if (auto dimensions = loaded["dimensions"])
+	{
+		cell_count.x = dimensions[0].as<I32>();
+		cell_count.y = dimensions[1].as<I32>();
+	}
+
+	Spritesheet sheet;
+
+	auto& registry = core::Engine::get_instance().registry;
+
+	I32 index = 0;
+	for (auto& sprite_data : loaded["sprites"])
+	{
+		Sprite sprite;
+		sprite.texture = texture;
+
+		auto& clip = sprite_data["clip"];
+		I32 x{ clip[0].as<I32>() };
+		I32 y{ clip[1].as<I32>() };
+		I32 w{ clip[2].as<I32>() };
+		I32 h{ clip[3].as<I32>() };
+		sprite.clip = geometry::Rect{ x, y, w, h };
+
+		auto& pivot = sprite_data["pivot"];
+		sprite.pivot.x = pivot[0].as<F32>();
+		sprite.pivot.y = pivot[1].as<F32>();
+
+		auto entity = registry.create();
+		registry.emplace<Sprite>(entity, sprite);
+		registry.emplace<I32>(entity, index);
+		index++;
+
+		sheet.sprites.push_back(entity);
+	}
+
+	auto sheet_entity = registry.create();
+	registry.emplace<Spritesheet>(sheet_entity, sheet);
+
+	return sheet_entity;
+}
+
+SpritesheetLoader::SpritesheetLoader() 
+{}
+
+Bool SpritesheetLoader::contains(String name) const
+{
+	return loaded_entity_mapping.find(name) != loaded_entity_mapping.end();
+}
+
 
 // Other loaders

@@ -1,12 +1,24 @@
+#include "Access.h"
 #include "Diagnostics.h"
-#include "Engine.h"
 
-double Diagnostics::get_diagnostics(DiagType diagType) const
+const DiagEntry& DiagnosticsModule::get_diagnostics(DiagType diagType)
 {
-	switch (diagType)
-	{
-		case DIAG_TYPE_FPS:
-			return core::Engine::get_instance().get_fps();
-	}
-	return .0;
+	assert(diagType != DIAG_TYPE_COUNT);
+	return diagnostics[diagType];
+}
+
+void DiagnosticsModule::set_diagnostics(DiagType diagType, F32 value)
+{
+	assert(diagType != DIAG_TYPE_COUNT);
+
+	DiagEntry& entry = diagnostics[diagType];
+	entry.value = value;
+	entry.sample_time = high_resolution_clock::now();
+
+	SignalEmitter<DiagnosticsToolSignal>::emit(DiagnosticsToolSignal{ diagType, entry });
+}
+
+void DiagnosticsModule::process_signal(DiagnosticsSignal& signal)
+{
+	set_diagnostics(signal.diagType, signal.value);
 }

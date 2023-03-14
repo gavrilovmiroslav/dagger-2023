@@ -12,9 +12,9 @@
 using namespace core;
 
 void ToolModule::on_tick()
-{
-	auto& input = AccessUnique<InputSnapshot>::access_unique();
-	if (input.get_mouse_button_middle() == MouseEventState::UpNow)
+{	
+	auto& keys = KeyState::get();
+	if (keys.is_down(KEY_LCTRL) && keys.is_pressed(KEY_T))
 	{
 		is_editor_enabled = !is_editor_enabled;
 	}
@@ -119,7 +119,7 @@ void Tool::process_signal(core::ToolRenderSignal&)
 		const auto& appendix = get_tool_window_appendix();		
 		if (appendix != "") title += " - " + appendix;
 		
-		ImGui::Begin((title + "###" + name).c_str(), (bool*)0, get_flags());
+		ImGui::Begin((title + "###" + name).c_str(), (bool*)nullptr, get_flags());
 		
 		show_tool_window();
 		ImGui::End();

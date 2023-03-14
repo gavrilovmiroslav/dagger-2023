@@ -55,8 +55,8 @@ namespace geometry {
 }
 
 namespace containers {
-	template<typename T>
-	using StaticArray = T[];
+	template<typename T, I32 N>
+	using StaticArray = std::array<T, N>;
 
 	template<typename T>
 	using DynamicArray = std::vector<T>;
@@ -72,6 +72,69 @@ namespace containers {
 
 	template<typename T>
 	using Set = std::unordered_set<T>;
+
+	template<typename T, typename IndexSize = I8, IndexSize N = 10>
+	struct SmallBuffer 
+	{
+		SmallBuffer()
+			: free{}
+			, entries{}
+		{
+			for (IndexSize i = 0; i < N; i++)
+			{
+				free[i] = true;
+			}
+		}
+
+		~SmallBuffer() = default;
+
+		void add(T t)
+		{
+			for (IndexSize i = 0; i < N; i++)
+			{
+				if (free[i])
+				{
+					free[i] = false;
+					entries[i] = t;
+					break;
+				}
+			}
+		}
+
+		void remove(T t)
+		{
+			for (IndexSize i = 0; i < N; i++)
+			{
+				if (!free[i] && entries[i] == t)
+				{
+					free[i] = true;
+					break;
+				}
+			}
+		}
+
+		Bool contains(T& t) const
+		{
+			for (IndexSize i = 0; i < N; i++)
+			{
+				if (!free[i] && entries[i] == t)
+					return true;
+			}
+
+			return false;
+		}
+
+		void clear()
+		{
+			for (IndexSize i = 0; i < N; i++)
+			{
+				free[i] = true;
+			}
+		}
+	private:
+		StaticArray<bool, N> free;
+		StaticArray<T, N> entries;
+	};
 }
 
 template<typename T>

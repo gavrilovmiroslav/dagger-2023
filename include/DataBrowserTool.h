@@ -10,7 +10,7 @@ namespace core
 
 class DataBrowserTool
 	: public core::Tool
-	, public AccessModule<core::AssetModule>
+	, public AccessSystem<core::AssetModule>
 	, public SignalEmitter<core::EditorAssetSelectedIntent>
 {
 	String current_path;
