@@ -76,7 +76,7 @@ void ToolModule::process_signal(PostRenderSignal&)
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
 
-		create_dockspace();
+		// create_dockspace();
 
 		SignalEmitter<ToolRenderSignal>::emit(ToolRenderSignal{});
 		auto& window_state = AccessUnique<WindowingState>::access_unique();
