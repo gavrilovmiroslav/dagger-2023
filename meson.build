@@ -30,13 +30,13 @@ sources = [
     'src/ImguiTextEditor.cpp',
     'src/Loaders.cpp',
     'src/LodePNG.cpp',
-    'src/Main.cpp',
     'src/Rendering.cpp',
     'src/SpriteEditorTool.cpp',
     'src/SpriteRendering.cpp',
     'src/TextEditorTool.cpp',
     'src/Tooling.cpp',
-    'src/Windowing.cpp'
+    'src/Windowing.cpp',
+    'src/Main.cpp'
 ]
 
 executable('dagger', sources, dependencies : deps, include_directories : include_directories('include'), cpp_args : '-DIMGUI_IMPL_OPENGL_LOADER_GLAD')
