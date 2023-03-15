@@ -6,6 +6,7 @@ deps = [
     dependency('imgui'),
     dependency('sdl2'),
     dependency('spdlog'),
+    dependency('yaml-0.1'),
     dependency('yaml-cpp')
 ]
 
