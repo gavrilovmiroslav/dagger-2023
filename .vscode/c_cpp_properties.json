@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Mac",
+            "name": "CppConfig",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
@@ -12,7 +12,6 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64",
             "compileCommands": "${workspaceFolder}/builddir/compile_commands.json"
         }
     ],
