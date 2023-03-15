@@ -128,7 +128,7 @@ struct MutAccessGroupStorage : public AccessTrait
 template<typename T>
 struct SignalEmitter : public AccessTrait
 {
-	void emit(T& signal) const
+	void emit(const T& signal) const
 	{
 		core::Engine::get_instance().dispatcher.trigger(signal);
 	}

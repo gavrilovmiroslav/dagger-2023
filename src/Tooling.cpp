@@ -7,7 +7,6 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_sdlrenderer.h>
-#include <implot.h>
 
 using namespace core;
 
@@ -24,7 +23,6 @@ void ToolModule::process_signal(WindowInitSignal&)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	ImPlot::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -98,7 +96,6 @@ void ToolModule::process_signal(WindowShutdownSignal&)
 {
 	ImGui_ImplSDLRenderer_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
-	ImPlot::DestroyContext();
 	ImGui::DestroyContext();
 }
 

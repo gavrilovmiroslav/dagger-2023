@@ -5,7 +5,7 @@
 #include "Textures.h"
 #include "Assets.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <imgui.h>
 #include <string>
 

@@ -6,6 +6,7 @@
 #include "Tooling.h"
 
 #include <imgui.h>
+#include <yaml-cpp/yaml.h>
 
 namespace core
 {
@@ -59,7 +60,7 @@ namespace core
 			auto name = get_default_asset_name();
 
 			containers::Set<String> keys{};
-			for (auto& key : yaml)
+			for (const auto& key : yaml)
 			{
 				keys.insert(key.first.as<String>());
 			}
@@ -70,7 +71,7 @@ namespace core
 			}
 			else
 			{
-				return yaml[name].as<String>();
+				return yaml[name].template as<String>();
 			}
 		}
 

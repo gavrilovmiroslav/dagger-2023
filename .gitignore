@@ -11,5 +11,8 @@ obj/**
 project/
 tools/Scripts/vcpkg
 
+builddir/
+subprojects/
+
 # CoffeeCup
 .brew
