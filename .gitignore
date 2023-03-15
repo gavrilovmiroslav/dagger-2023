@@ -10,6 +10,7 @@ obj/**
 *.vcxproj.user
 project/
 tools/Scripts/vcpkg
+imgui.ini
 
 builddir/
 subprojects/
